@@ -1,6 +1,6 @@
-# strider-bundler
-[![Build Status](https://travis-ci.org/oliversalzburg/strider-bundler.svg?branch=master)](https://travis-ci.org/oliversalzburg/strider-bundler)
+# strider-carrier
+[![Build Status](https://travis-ci.org/oliversalzburg/strider-carrier.svg?branch=master)](https://travis-ci.org/oliversalzburg/strider-carrier)
 
 Packages files in the build workspace
 
-[Icon Source](https://commons.wikimedia.org/wiki/File:Package.svg)
+[Icon Source](https://pixabay.com/en/pigeon-rock-gray-shadow-bird-47505/)

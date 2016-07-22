@@ -1,8 +1,8 @@
 {
-  "name": "strider-bundler",
+  "name": "strider-carrier",
   "version": "1.0.0",
-  "description": "Packages files in the build workspace",
-  "homepage": "https://github.com/oliversalzburg/strider-bundler",
+  "description": "Sends files to other hosts",
+  "homepage": "https://github.com/oliversalzburg/strider-carrier",
   "main": "webapp.js",
   "scripts": {
     "lint": "eslint *.js config lib",
@@ -10,12 +10,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oliversalzburg/strider-bundler.git"
+    "url": "https://github.com/oliversalzburg/strider-carrier.git"
   },
   "keywords": [
     "strider",
     "plugin",
-    "template"
+    "carrier"
   ],
   "engines": {
     "node": ">=4.2"
@@ -28,8 +28,8 @@
   },
   "strider": {
     "type": "job",
-    "id": "bundler",
-    "title": "Bundler",
+    "id": "carrier",
+    "title": "Carrier",
     "worker": "worker.js",
     "webapp": "webapp.js",
     "icon": "icon.png"

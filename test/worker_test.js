@@ -7,19 +7,19 @@ const sinonChai = require('sinon-chai');
 
 chai.use(sinonChai);
 
-const bundlerInit = require('../worker.js');
+const carrierInit = require('../worker.js');
 
-describe('bundler', () => {
+describe('carrier', () => {
   describe('with directory', () => {
-    let bundler;
+    let carrier;
 
     before(() => {
       const config = {
         bundleDirectory: 'dist'
       };
       const job = {};
-      return bundlerInit.initAsync(config, job)
-        .then(result => bundler = result);
+      return carrierInit.initAsync(config, job)
+        .then(result => carrier = result);
     });
 
     it('should run the expected tar command', () => {
@@ -31,7 +31,7 @@ describe('bundler', () => {
         cmd: contextCmd
       };
 
-      return bundler.deployAsync(context)
+      return carrier.deployAsync(context)
         .then(() => {
           expect(contextCmd).to.have.been.calledWithMatch({
             command: 'tar',
@@ -42,15 +42,15 @@ describe('bundler', () => {
   });
 
   describe('with verbose', () => {
-    let bundler;
+    let carrier;
 
     before(() => {
       const config = {
         verbose: true
       };
       const job = {};
-      return bundlerInit.initAsync(config, job)
-        .then(result => bundler = result);
+      return carrierInit.initAsync(config, job)
+        .then(result => carrier = result);
     });
 
     it('should run the expected tar command', () => {
@@ -62,7 +62,7 @@ describe('bundler', () => {
         cmd: contextCmd
       };
 
-      return bundler.deployAsync(context)
+      return carrier.deployAsync(context)
         .then(() => {
           expect(contextCmd).to.have.been.calledWithMatch({
             command: 'tar',
@@ -73,15 +73,15 @@ describe('bundler', () => {
   });
 
   describe('with exclude', () => {
-    let bundler;
+    let carrier;
 
     before(() => {
       const config = {
         exclude: ['foo']
       };
       const job = {};
-      return bundlerInit.initAsync(config, job)
-        .then(result => bundler = result);
+      return carrierInit.initAsync(config, job)
+        .then(result => carrier = result);
     });
 
     it('should run the expected tar command', () => {
@@ -93,7 +93,7 @@ describe('bundler', () => {
         cmd: contextCmd
       };
 
-      return bundler.deployAsync(context)
+      return carrier.deployAsync(context)
         .then(() => {
           expect(contextCmd).to.have.been.calledWithMatch({
             command: 'tar',

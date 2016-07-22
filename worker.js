@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 
-const debug = require('debug')('strider-bundler:worker');
+const debug = require('debug')('strider-carrier:worker');
 
 function toStriderProxy(instance) {
   const functionsInInstance = Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).filter(propertyName => {
@@ -26,9 +26,9 @@ function toStriderProxy(instance) {
   return instance;
 }
 
-class BundlerPhaseWorker {
+class CarrierPhaseWorker {
   constructor(config, job) {
-    debug('Constructing phase worker for strider-bundler…');
+    debug('Constructing phase worker for strider-carrier…');
 
     this.config = config || {};
     this.job = job;
@@ -39,7 +39,7 @@ class BundlerPhaseWorker {
     };
 
     // Example: Static command definition for a phase
-    this.environment = 'echo This job will be processed by strider-bundler';
+    this.environment = 'echo This job will be processed by strider-carrier';
   }
 
   // Run this function in the deploy phase.
@@ -83,11 +83,11 @@ class BundlerPhaseWorker {
   }
 }
 
-class BundlerInit {
+class CarrierInit {
   init(config, job) {
-    debug('Initializing strider-bundler…');
-    return Promise.resolve(toStriderProxy(new BundlerPhaseWorker(config, job)));
+    debug('Initializing strider-carrier…');
+    return Promise.resolve(toStriderProxy(new CarrierPhaseWorker(config, job)));
   }
 }
 
-module.exports = toStriderProxy(new BundlerInit());
+module.exports = toStriderProxy(new CarrierInit());
