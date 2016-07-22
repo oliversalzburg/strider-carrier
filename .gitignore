@@ -1,0 +1,12 @@
+# Ignore certain IDEA/WebStorm project files
+.idea/deployment.xml
+.idea/workspace.xml
+
+# Code coverage reults
+coverage/
+
+# npm modules
+node_modules/
+
+# npm error log
+npm-debug.log

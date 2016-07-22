@@ -1,0 +1,45 @@
+{
+  "name": "strider-bundler",
+  "version": "1.0.0",
+  "description": "Packages files in the build workspace",
+  "homepage": "https://github.com/oliversalzburg/strider-bundler",
+  "main": "webapp.js",
+  "scripts": {
+    "lint": "eslint *.js config lib",
+    "test": "npm run lint && istanbul cover node_modules/mocha/bin/_mocha --recursive test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oliversalzburg/strider-bundler.git"
+  },
+  "keywords": [
+    "strider",
+    "plugin",
+    "template"
+  ],
+  "engines": {
+    "node": ">=4.2"
+  },
+  "author": "Oliver Salzburg <oliver.salzburg@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "debug": "^2.2.0"
+  },
+  "strider": {
+    "type": "job",
+    "id": "bundler",
+    "title": "Bundler",
+    "worker": "worker.js",
+    "webapp": "webapp.js",
+    "icon": "icon.png"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^3.1.1",
+    "istanbul": "^0.4.4",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0"
+  }
+}
