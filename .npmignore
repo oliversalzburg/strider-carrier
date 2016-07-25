@@ -1,0 +1,14 @@
+# IntelliJ IDEA/WebStorm project files
+.idea/
+
+# Code coverage results
+coverage/
+
+# Other npm modules
+node_modules/
+
+# Tests
+test/
+
+# Hidden files
+.*
