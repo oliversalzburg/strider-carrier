@@ -16,32 +16,29 @@ class CarrierPhaseWorker {
 
   //noinspection JSUnusedGlobalSymbols
   deploy(context) {
-    debug('Starting transfer process…');
+    debug('Starting transfer process...');
     context.comment('Starting transfer process…');
 
     const contextCmd = Promise.promisify(context.cmd);
 
-    const hosts = this.config.hosts.map(target => {
-      const matches = target.match(/(?:([\w-]+)@)?([\w.-]+)(?::(\d+))?/);
-      return {
-        user: matches[1],
-        host: matches[2],
-        port: matches[3]
-      };
-    });
+    const hosts = parseHosts(this.config.hosts);
 
     return Promise.map(hosts, host => {
       let targetString = `${host.host}:${this.config.target}`;
-      if(host.user) {
+      if (host.user) {
         targetString = `${host.user}@${targetString}`;
       }
 
       const args = [];
 
       // Add remote port as needed.
-      if(host.port) {
-        args.push('-P');
-        args.push(host.port);
+      if (host.port) {
+        args.push('-P', host.port);
+      }
+
+      // Disable strict host key checking (known_hosts) if it was explicitly set to false.
+      if (this.config.strictHostKeyChecking === false) {
+        args.push('-o', 'StrictHostKeyChecking=no', '-o', 'UserKnownHostsFile=/dev/null');
       }
 
       // Add the source and target file locations.
@@ -57,6 +54,17 @@ class CarrierPhaseWorker {
         });
     });
   }
+}
+
+function parseHosts(hosts) {
+  return hosts.map(target => {
+    const matches = target.match(/(?:([\w-]+)@)?([\w.-]+)(?::(\d+))?/);
+    return {
+      user: matches[1],
+      host: matches[2],
+      port: matches[3]
+    };
+  });
 }
 
 class CarrierInit {

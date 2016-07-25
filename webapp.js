@@ -6,6 +6,7 @@ module.exports = {
     target: {type: String, default: '/tmp/package.tgz'},
     hosts: [
       {type: String}
-    ]
+    ],
+    strictHostKeyChecking: {type: Boolean}
   }
 };
