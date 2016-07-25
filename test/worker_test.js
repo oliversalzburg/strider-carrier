@@ -10,19 +10,23 @@ chai.use(sinonChai);
 const carrierInit = require('../worker.js');
 
 describe('carrier', () => {
-  describe('with directory', () => {
+  describe('host parsing - host only', () => {
     let carrier;
 
     before(() => {
       const config = {
-        bundleDirectory: 'dist'
+        source: 'package.tgz',
+        target: '/tmp/package.tgz',
+        hosts: [
+          'my.amazing.host'
+        ]
       };
       const job = {};
       return carrierInit.initAsync(config, job)
         .then(result => carrier = result);
     });
 
-    it('should run the expected tar command', () => {
+    it('should run the expected scp command', () => {
       let contextCmd = sinon.stub();
       contextCmd.onFirstCall().callsArg(1);
 
@@ -34,26 +38,29 @@ describe('carrier', () => {
       return carrier.deployAsync(context)
         .then(() => {
           expect(contextCmd).to.have.been.calledWithMatch({
-            command: 'tar',
-            args: ['--create', '--gzip', '--directory=dist', '--file=package.tgz', '.']
+            command: 'scp',
+            args: ['package.tgz', 'my.amazing.host:/tmp/package.tgz']
           });
         });
     });
   });
-
-  describe('with verbose', () => {
+  describe('host parsing - host with username', () => {
     let carrier;
 
     before(() => {
       const config = {
-        verbose: true
+        source: 'package.tgz',
+        target: '/tmp/package.tgz',
+        hosts: [
+          'user@my.amazing.host'
+        ]
       };
       const job = {};
       return carrierInit.initAsync(config, job)
         .then(result => carrier = result);
     });
 
-    it('should run the expected tar command', () => {
+    it('should run the expected scp command', () => {
       let contextCmd = sinon.stub();
       contextCmd.onFirstCall().callsArg(1);
 
@@ -65,26 +72,29 @@ describe('carrier', () => {
       return carrier.deployAsync(context)
         .then(() => {
           expect(contextCmd).to.have.been.calledWithMatch({
-            command: 'tar',
-            args: ['--create', '--verbose', '--gzip', '--file=package.tgz', '.']
+            command: 'scp',
+            args: ['package.tgz', 'user@my.amazing.host:/tmp/package.tgz']
           });
         });
     });
   });
-
-  describe('with exclude', () => {
+  describe('host parsing - host with port', () => {
     let carrier;
 
     before(() => {
       const config = {
-        exclude: ['foo']
+        source: 'package.tgz',
+        target: '/tmp/package.tgz',
+        hosts: [
+          'my.amazing.host:1234'
+        ]
       };
       const job = {};
       return carrierInit.initAsync(config, job)
         .then(result => carrier = result);
     });
 
-    it('should run the expected tar command', () => {
+    it('should run the expected scp command', () => {
       let contextCmd = sinon.stub();
       contextCmd.onFirstCall().callsArg(1);
 
@@ -96,8 +106,8 @@ describe('carrier', () => {
       return carrier.deployAsync(context)
         .then(() => {
           expect(contextCmd).to.have.been.calledWithMatch({
-            command: 'tar',
-            args: ['--create', '--gzip', '--file=package.tgz', '--exclude=foo', '.']
+            command: 'scp',
+            args: ['-P', '1234', 'package.tgz', 'my.amazing.host:/tmp/package.tgz']
           });
         });
     });

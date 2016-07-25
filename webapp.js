@@ -2,9 +2,9 @@
 
 module.exports = {
   config: {
-    verbose: {type: Boolean, default: true},
-    bundleDirectory: {type: String},
-    exclude: [
+    source: {type: String, default: 'package.tgz'},
+    target: {type: String, default: '/tmp/package.tgz'},
+    hosts: [
       {type: String}
     ]
   }

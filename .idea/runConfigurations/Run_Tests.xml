@@ -4,7 +4,9 @@
     <node-options />
     <working-directory>$PROJECT_DIR$</working-directory>
     <pass-parent-env>true</pass-parent-env>
-    <envs />
+    <envs>
+      <env name="DEBUG" value="strider*" />
+    </envs>
     <ui>bdd</ui>
     <extra-mocha-options />
     <test-kind>DIRECTORY</test-kind>

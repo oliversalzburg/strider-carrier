@@ -3,28 +3,8 @@
 const Promise = require('bluebird');
 
 const debug = require('debug')('strider-carrier:worker');
-
-function toStriderProxy(instance) {
-  const functionsInInstance = Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).filter(propertyName => {
-    return typeof instance[propertyName] === 'function' && propertyName !== 'constructor';
-  });
-
-  functionsInInstance.forEach(functionInInstance => {
-    instance[`${functionInInstance}Async`] = instance[functionInInstance];
-    instance[functionInInstance] = function () {
-      const args = Array.from(arguments);
-      const done = args.pop();
-      return instance[`${functionInInstance}Async`].apply(instance, args)
-        .then(result => done(null, result))
-        .catch(error => done(error));
-    };
-    Object.defineProperty(instance[functionInInstance], 'length', {
-      value: instance[`${functionInInstance}Async`].length
-    });
-  });
-
-  return instance;
-}
+const ExtensionConfigurationError = require('strider-modern-extensions').errors.ExtensionConfigurationError;
+const toStriderProxy = require('strider-modern-extensions').toStriderProxy;
 
 class CarrierPhaseWorker {
   constructor(config, job) {
@@ -32,60 +12,68 @@ class CarrierPhaseWorker {
 
     this.config = config || {};
     this.job = job;
-
-    // Example: Setting an environment variable
-    this.env = {
-      'BUNDLER_ACTIVE': true
-    };
-
-    // Example: Static command definition for a phase
-    this.environment = 'echo This job will be processed by strider-carrier';
   }
 
-  // Run this function in the deploy phase.
+  //noinspection JSUnusedGlobalSymbols
   deploy(context) {
-    debug('Starting bundling process…');
-    context.comment('Starting bundling process…');
+    debug('Starting transfer process…');
+    context.comment('Starting transfer process…');
 
     const contextCmd = Promise.promisify(context.cmd);
 
-    const args = [];
-    // Create an archive
-    args.push('--create');
-    // Set verbose as requested.
-    if (this.config.verbose) {
-      args.push('--verbose');
-    }
-    // Compress it
-    args.push('--gzip');
-    // If a directory was given, archive that (otherwise cwd)
-    if (this.config.bundleDirectory) {
-      args.push(`--directory=${this.config.bundleDirectory}`);
-    }
-    // Set the output filename
-    args.push('--file=package.tgz');
+    const hosts = this.config.hosts.map(target => {
+      const matches = target.match(/(?:([\w-]+)@)?([\w.-]+)(?::(\d+))?/);
+      return {
+        user: matches[1],
+        host: matches[2],
+        port: matches[3]
+      };
+    });
 
-    if (this.config.exclude && this.config.exclude.length) {
-      this.config.exclude.forEach(exclude => {
-        args.push(`--exclude=${exclude}`);
-      });
-    }
+    return Promise.map(hosts, host => {
+      let targetString = `${host.host}:${this.config.target}`;
+      if(host.user) {
+        targetString = `${host.user}@${targetString}`;
+      }
 
-    args.push('.');
+      const args = [];
 
-    return contextCmd({
-      command: 'tar',
-      args: args
-    })
-      .then(() => {
-        context.comment('Bundle created as package.tgz.');
-      });
+      // Add remote port as needed.
+      if(host.port) {
+        args.push('-P');
+        args.push(host.port);
+      }
+
+      // Add the source and target file locations.
+      args.push(this.config.source);
+      args.push(targetString);
+
+      return contextCmd({
+        command: 'scp',
+        args: args
+      })
+        .then(() => {
+          context.comment(`Package carried to ${targetString}.`);
+        });
+    });
   }
 }
 
 class CarrierInit {
+  //noinspection JSUnusedGlobalSymbols
   init(config, job) {
     debug('Initializing strider-carrier…');
+
+    if (!config.source) {
+      throw new ExtensionConfigurationError('source', 'The configuration is expected to contain a \'source\' member that contains the path pointing to the file to copy.');
+    }
+    if (!config.target) {
+      throw new ExtensionConfigurationError('target', 'The configuration is expected to contain a \'target\' member that contains the path pointing to where to copy the file to on the remote host(s).');
+    }
+    if (!config.hosts || !config.hosts.length) {
+      throw new ExtensionConfigurationError('hosts', 'The configuration is expected to contain a \'hosts\' member that contains an array of hosts to which to copy the file. The format should be \'[user@]host[:port]\'.');
+    }
+
     return Promise.resolve(toStriderProxy(new CarrierPhaseWorker(config, job)));
   }
 }
