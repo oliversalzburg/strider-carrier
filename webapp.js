@@ -7,6 +7,7 @@ module.exports = {
     hosts: [
       {type: String}
     ],
-    strictHostKeyChecking: {type: Boolean}
+    strictHostKeyChecking: {type: Boolean},
+    identity: {type: String}
   }
 };

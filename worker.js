@@ -41,6 +41,10 @@ class CarrierPhaseWorker {
         args.push('-o', 'StrictHostKeyChecking=no', '-o', 'UserKnownHostsFile=/dev/null');
       }
 
+      if(this.config.identity) {
+        args.push('-i', this.config.identity);
+      }
+
       // Add the source and target file locations.
       args.push(this.config.source);
       args.push(targetString);
